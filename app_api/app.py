@@ -42,13 +42,13 @@ def login():
             query = "SELECT * FROM users WHERE mail = '" + usermail +  "' AND password = '" + password + "'"
             print(query)
             cursor.execute(query)
-            user = cursor.fetchone()
+            user = cursor.fetchall()
             
         # Close the connection
         connection.close()
         print(user)
         if user:
-            return render_template('home.html', user=user)
+            return render_template('home.html', all_users=user)
         else:
             return jsonify({"error": "Invalid usermail or password"}), 401
 
