@@ -1,47 +1,59 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import pymysql
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 # Database configuration
 db_config = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'yourpassword',
-    'database': 'yourdatabase',
+    'password': 'root',
+    'database': 'world',
     'cursorclass': pymysql.cursors.DictCursor
 }
 
-@app.route('/login', methods=['POST'])
+@app.route('/', methods=['GET'])
+def first_page():
+    return render_template("login.html")
+
+@app.route('/home', methods=['GET'])
+def home_page():
+    return render_template("home.html")
+
+@app.route('/login', methods=['POST', 'GET'])
 def login():
     try:
-        # Get data from request
-        data = request.json
-        username = data.get('username')
-        password = data.get('password')
+        if request.method == 'GET':
+            return render_template("login.html")
+    
+        usermail = request.form.get('usermail')
+        password = request.form.get('password')
 
         # Validate input
-        if not username or not password:
-            return jsonify({"error": "Username and password are required"}), 400
+        if not usermail or not password:
+            return jsonify({"error": "usermail and password are required"}), 400
 
         # Connect to the database
         connection = pymysql.connect(**db_config)
         with connection.cursor() as cursor:
             # SQL query to authenticate user
-            query = "SELECT * FROM users WHERE username = %s AND password = %s"
-            cursor.execute(query, (username, password))
+            query = "SELECT * FROM users WHERE mail = %s AND password = %s"
+            cursor.execute(query, (usermail, password))
             user = cursor.fetchone()
-
+            
         # Close the connection
         connection.close()
-
+        print(user)
         if user:
-            return jsonify({"message": "Login successful", "user": user}), 200
+            return render_template('home.html', user=user)
         else:
-            return jsonify({"error": "Invalid username or password"}), 401
+            return jsonify({"error": "Invalid usermail or password"}), 401
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)

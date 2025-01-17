@@ -7,7 +7,38 @@
    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-	
+	<script>
+    $(document).ready(function () {
+        $('#loginForm').submit(function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            // Get input values
+            const username = $('#username').val();
+            const password = $('#password').val();
+
+            // Send login request to the API
+            $.ajax({
+                url: 'http://127.0.0.1:5000/login', // Flask API endpoint
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ username, password }),
+                success: function (response) {
+                    // Redirect to home page on successful login
+                    alert('Login successful!');
+                    window.location.href = '/home'; // Replace '/home' with your home page URL
+                },
+                error: function (xhr) {
+                    // Handle errors
+                    if (xhr.status === 401) {
+                        alert('Invalid username or password');
+                    } else {
+                        alert('An error occurred: ' + xhr.responseJSON.error);
+                    }
+                }
+            });
+        });
+    });
+</script>
 	<title></title>
 </head>
 <body>
@@ -28,19 +59,7 @@
     <br\>
     <input type="button" class = "btn btn-primary" value="Login"> </input>
     <input type="button" class = "btn btn-danger" value="Cancel"> </input>
-    <div class="container">
-      <h2>Login Details</h2>
-      <p>The .table-bordered class adds borders to a table:</p>            
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Firstname</th>
-            <th>Lastname</th>
-            <th>password</th>
-            <th>Email</th>
-            <th>Email</th>
-          </tr>
-        </thead>
+
 </div>
 </body>
 
