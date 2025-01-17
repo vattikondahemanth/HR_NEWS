@@ -39,8 +39,9 @@ def login():
         connection = pymysql.connect(**db_config)
         with connection.cursor() as cursor:
             # SQL query to authenticate user
-            query = "SELECT * FROM users WHERE mail = %s AND password = %s"
-            cursor.execute(query, (usermail, password))
+            query = "SELECT * FROM users WHERE mail = '" + usermail +  "' AND password = '" + password + "'"
+            print(query)
+            cursor.execute(query)
             user = cursor.fetchone()
             
         # Close the connection
